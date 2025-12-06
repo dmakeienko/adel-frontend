@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import type { User, Group, UserGroupStatus } from '../types';
 import api from '../services/api';
 import { useNotification } from '../contexts/NotificationContext';
@@ -24,25 +24,12 @@ export function GroupMembership({ user, onUpdate }: GroupMembershipProps) {
   const searchRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
-  useEffect(() => {
-    loadUserGroups();
-    loadAllGroups();
-  }, [user]);
+  const extractCNFromDN = (dn: string): string => {
+    const match = dn.match(/^CN=([^,]+)/i);
+    return match ? match[1] : dn;
+  };
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        searchRef.current &&
-        !searchRef.current.contains(event.target as Node)
-      ) {
-        setIsSearchOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const loadAllGroups = async () => {
+  const loadAllGroups = useCallback(async () => {
     try {
       const response = await api.getAllGroups();
       if (response.success && response.groups) {
@@ -51,9 +38,9 @@ export function GroupMembership({ user, onUpdate }: GroupMembershipProps) {
     } catch {
       console.error('Failed to load groups');
     }
-  };
+  }, []);
 
-  const loadUserGroups = () => {
+  const loadUserGroups = useCallback(() => {
     if (!user.memberOf) {
       setGroups([]);
       return;
@@ -78,18 +65,30 @@ export function GroupMembership({ user, onUpdate }: GroupMembershipProps) {
     });
 
     setGroups(userGroups.sort((a, b) => a.group.cn.localeCompare(b.group.cn)));
-  };
+  }, [user.memberOf, allGroups]);
+
+  useEffect(() => {
+    loadAllGroups();
+  }, [loadAllGroups]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(event.target as Node)
+      ) {
+        setIsSearchOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     if (allGroups.length > 0) {
       loadUserGroups();
     }
-  }, [allGroups, user.memberOf]);
-
-  const extractCNFromDN = (dn: string): string => {
-    const match = dn.match(/^CN=([^,]+)/i);
-    return match ? match[1] : dn;
-  };
+  }, [allGroups, user.memberOf, loadUserGroups]);
 
   useEffect(() => {
     if (debounceRef.current) {
