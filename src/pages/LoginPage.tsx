@@ -45,7 +45,7 @@ export function LoginPage() {
             <span className="logo-icon">AD</span>
           </div>
           <h1 className="app-title">ADEL</h1>
-          <p className="app-subtitle">Active Directory Easy Liaison</p>
+          <p className="app-subtitle">Active Directory Engagement Layer</p>
           <p className="app-description">
             A secure web interface for managing Active Directory users and
             groups. Connect to your organization's directory service with your
