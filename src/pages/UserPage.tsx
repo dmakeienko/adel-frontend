@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotification } from '../contexts/NotificationContext';
@@ -16,7 +16,7 @@ export function UserPage() {
   const [user, setUser] = useState<User | null>(null);
   const [isLoadingUser, setIsLoadingUser] = useState(true);
 
-  const loadUser = async () => {
+  const loadUser = useCallback(async () => {
     if (!username) return;
 
     setIsLoadingUser(true);
@@ -34,13 +34,13 @@ export function UserPage() {
     } finally {
       setIsLoadingUser(false);
     }
-  };
+  }, [username, showNotification]);
 
   useEffect(() => {
     if (isAuthenticated && username) {
       loadUser();
     }
-  }, [username, isAuthenticated]);
+  }, [username, isAuthenticated, loadUser]);
 
   if (isLoading) {
     return (
