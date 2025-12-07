@@ -8,7 +8,7 @@ import type {
   SearchResponse,
 } from '../types';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://localhost:8443';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://localhost:8080';
 
 class ApiService {
   private client: AxiosInstance;

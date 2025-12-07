@@ -55,8 +55,8 @@ export function UserPage() {
     return <Navigate to="/" replace />;
   }
 
-  const formatDate = (dateStr?: string): string => {
-    if (!dateStr) return '-';
+  const formatDate = (dateStr?: string | null): string => {
+    if (!dateStr || dateStr === null) return '-';
     try {
       const date = new Date(dateStr);
       return date.toLocaleDateString('en-US', {
@@ -150,17 +150,17 @@ export function UserPage() {
 
                 <div className="profile-field">
                   <label>Account Exp. Date</label>
-                  <span>{user.accountExpires || 'Never'}</span>
+                  <span>{user.accountExpires === null ? 'Never' : formatDate(user.accountExpires)}</span>
                 </div>
 
                 <div className="profile-field">
                   <label>Password Last Set</label>
-                  <span>{formatDate(user.pwdLastSet) || '-'}</span>
+                  <span>{user.pwdLastSet === null ? 'Not Set' : formatDate(user.pwdLastSet)}</span>
                 </div>
 
                 <div className="profile-field">
                   <label>Password Exp. Date</label>
-                  <span>{user.pwdExpires || 'Never'}</span>
+                  <span>{user.passwordExpiryDate === null ? 'Never' : formatDate(user.passwordExpiryDate)}</span>
                 </div>
 
                 <div className="profile-field">

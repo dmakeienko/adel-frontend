@@ -24,9 +24,9 @@ export interface User {
   whenChanged?: string;
   enabled: boolean;
   attributes?: Record<string, string>;
-  accountExpires?: string;
-  pwdLastSet?: string;
-  pwdExpires?: string;
+  accountExpires?: string | null;
+  pwdLastSet?: string | null;
+  passwordExpiryDate?: string | null;
 }
 
 export interface Group {
